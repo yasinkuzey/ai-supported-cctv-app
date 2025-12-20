@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen">
+        <div class="login-card">
+            <div class="logo">🎥</div>
+            <h1>CCTV Panel</h1>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Kullanıcı adı" required>
+                <input type="password" id="password" placeholder="Şifre" required>
+                <button type="submit">Giriş Yap</button>
+                <p id="login-error" class="error"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="screen hidden">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">🎥 CCTV</div>
+            <ul>
+                <li class="active" data-page="overview">📊 Özet</li>
+                <li data-page="logs">📋 Loglar</li>
+                <li data-page="photos">📷 Fotoğraflar</li>
+                <li data-page="settings">⚙️ Ayarlar</li>
+            </ul>
+            <div class="logout" onclick="logout()">🚪 Çıkış</div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Overview Page -->
+            <section id="page-overview" class="page">
+                <h2>Özet</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-total">-</div>
+                        <div class="stat-label">Toplam Log</div>
+                    </div>
+                    <div class="stat-card anomaly">
+                        <div class="stat-value" id="stat-anomaly">-</div>
+                        <div class="stat-label">Anomali</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-rate">-</div>
+                        <div class="stat-label">Anomali Oranı</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-24h">-</div>
+                        <div class="stat-label">Son 24 Saat</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="anomaly-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Logs Page -->
+            <section id="page-logs" class="page hidden">
+                <h2>Loglar</h2>
+                <div class="filters">
+                    <select id="filter-anomaly">
+                        <option value="">Tümü</option>
+                        <option value="true">Sadece Anomali</option>
+                        <option value="false">Sadece Temiz</option>
+                    </select>
+                    <button onclick="loadLogs()">Filtrele</button>
+                </div>
+                <table id="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                            <th>Açıklama</th>
+                            <th>Fark %</th>
+                            <th>Görüntü</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <div class="pagination">
+                    <button onclick="prevPage()">← Önceki</button>
+                    <span id="page-info">Sayfa 1</span>
+                    <button onclick="nextPage()">Sonraki →</button>
+                </div>
+            </section>
+
+            <!-- Photos Page -->
+            <section id="page-photos" class="page hidden">
+                <h2>Fotoğraflar</h2>
+                <div id="photos-grid" class="photos-grid"></div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="page-settings" class="page hidden">
+                <h2>Ayarlar</h2>
+
+                <div class="settings-section">
+                    <h3>Anomali Türleri</h3>
+                    <textarea id="anomalies-input" rows="3"
+                        placeholder="Yangın, Hırsız, Yerde yatan insan..."></textarea>
+                    <button onclick="saveSettings()">Kaydet</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Email Bildirimleri</h3>
+                    <div id="email-list"></div>
+                    <div class="add-email">
+                        <input type="email" id="new-email" placeholder="Email adresi">
+                        <input type="text" id="new-name" placeholder="İsim (opsiyonel)">
+                        <button onclick="addEmail()">Ekle</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Image Modal -->
+    <div id="image-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">×</span>
+            <div class="comparison-view">
+                <div class="img-box">
+                    <h3>Önceki</h3>
+                    <img id="modal-image-prev" src="" onerror="this.src=''; this.parentElement.style.display='none'">
+                </div>
+                <div class="img-box">
+                    <h3>Şu Anki</h3>
+                    <img id="modal-image-curr" src="">
+                </div>
+            </div>
+            <p id="modal-desc" class="modal-desc"></p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
