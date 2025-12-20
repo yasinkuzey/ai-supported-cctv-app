@@ -1,0 +1,36 @@
+# AI-Supported CCTV App
+
+# Dependencies
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Environment variables (NEVER commit this!)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test images
+*.jpg
+*.jpeg
+*.png
+!test_images/
+
+# Logs
+*.log
