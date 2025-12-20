@@ -67,7 +67,7 @@ def calculate_image_diff(current_img, last_image_path):
         
         diff = np.abs(current_array - last_array)
         percentage = (np.mean(diff) / 255.0) * 100
-        return round(percentage, 2)
+        return float(round(percentage, 2))
     except:
         return 0.0
 
