@@ -3,6 +3,6 @@ fastapi
 uvicorn[standard]
 python-multipart
 supabase
-google-generativeai
+google-generativeai>=0.4.0
 Pillow
 numpy

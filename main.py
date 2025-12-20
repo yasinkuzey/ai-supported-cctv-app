@@ -74,7 +74,7 @@ def calculate_image_diff(current_img, last_image_path):
 
 def analyze_with_gemini(image, anomalies_to_watch):
     """Gemini ile görüntü analizi."""
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
     prompt = f"""Sen bir güvenlik kamerası analiz asistanısın.
 Görüntüyü analiz et ve şu riskleri kontrol et: "{anomalies_to_watch}"
