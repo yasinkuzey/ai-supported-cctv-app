@@ -82,12 +82,17 @@ Görüntüyü analiz et ve şu riskleri kontrol et: "{anomalies_to_watch}"
 Sadece JSON döndür:
 {{"is_anomaly": true/false, "reason": "kısa açıklama"}}"""
 
+    print(f"🤖 Gemini İsteği Gönderiliyor: {anomalies_to_watch}")
     try:
         response = model.generate_content([prompt, image])
+        print(f"🤖 Gemini Ham Cevap: {response.text}")
         text = response.text.replace('```json', '').replace('```', '').strip()
-        return json.loads(text)
-    except:
-        return {"is_anomaly": False, "reason": "Analiz hatası"}
+        result = json.loads(text)
+        print(f"🤖 Gemini JSON: {result}")
+        return result
+    except Exception as e:
+        print(f"❌ Gemini Hatası: {e}")
+        return {"is_anomaly": False, "reason": f"Analiz hatası: {str(e)}"}
 
 
 def send_alert_email(reason, image_url):
@@ -235,8 +240,9 @@ async def upload_image(file: UploadFile = File(...)):
     filename = f"captures/{timestamp}.jpg"
     
     # Önceki fotoğrafı al
-    last_log = supabase.table('logs').select("image_path").order('created_at', desc=True).limit(1).execute()
+    last_log = supabase.table('logs').select("image_path, image_url").order('created_at', desc=True).limit(1).execute()
     last_path = last_log.data[0]['image_path'] if last_log.data else None
+    previous_image_url = last_log.data[0]['image_url'] if last_log.data else None
     
     # Fark hesapla
     diff = calculate_image_diff(image, last_path)
@@ -263,24 +269,33 @@ async def upload_image(file: UploadFile = File(...)):
     # Gemini analizi
     result = analyze_with_gemini(image, anomalies)
     
+    # %20 ve üzeri fark varsa otomatik anomali
+    is_anomaly = result['is_anomaly']
+    reason = result['reason']
+    
+    if diff >= 20.0:
+        is_anomaly = True
+        reason = f"Yüksek Fark ({diff}%) - {reason}"
+
     # Log kaydet
     supabase.table('logs').insert({
-        "is_anomaly": result['is_anomaly'],
-        "reason": result['reason'],
+        "is_anomaly": is_anomaly,
+        "reason": reason,
         "diff_percentage": diff,
         "image_url": image_url,
+        "previous_image_url": previous_image_url,
         "image_path": filename
     }).execute()
     
     # Anomali varsa mail
-    if result['is_anomaly']:
-        send_alert_email(result['reason'], image_url)
+    if is_anomaly:
+        send_alert_email(reason, image_url)
     
     return {
         "status": "ok",
         "diff": diff,
-        "is_anomaly": result['is_anomaly'],
-        "reason": result['reason']
+        "is_anomaly": is_anomaly,
+        "reason": reason
     }
 
 
