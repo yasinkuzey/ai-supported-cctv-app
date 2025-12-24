@@ -85,10 +85,10 @@ Sadece JSON döndür:
     print(f"🤖 Gemini İsteği Gönderiliyor: {anomalies_to_watch}")
     try:
         response = model.generate_content([prompt, image])
-        print(f"🤖 Gemini Ham Cevap: {response.text}")
+        print(f"🤖 Gemini Ham Cevap : {response.text}")
         text = response.text.replace('```json', '').replace('```', '').strip()
         result = json.loads(text)
-        print(f"🤖 Gemini JSON: {result}")
+        print(f"🤖 Gemini JSON : {result}")
         return result
     except Exception as e:
         print(f"❌ Gemini Hatası: {e}")
